@@ -1,607 +1,443 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>月相变化 · 真实比例交互演示</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>月亮为什么会变脸？· 月相探索</title>
 <style>
-:root{--bg:#080d1c;--panel:#101731;--line:#223055;--txt:#dce6ff;--dim:#8fa3cf;--acc:#7cc7ff;--gold:#ffd76a;}
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:radial-gradient(1200px 700px at 70% -10%,#16224a 0%,var(--bg) 55%);color:var(--txt);font-family:"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;min-height:100vh;padding:22px clamp(12px,4vw,48px) 40px}
-header{max-width:1280px;margin:0 auto 16px}
-h1{font-size:clamp(20px,3vw,30px);font-weight:700;letter-spacing:1px}
-h1 .moon{color:var(--gold)}
-.sub{color:var(--dim);margin-top:6px;font-size:14px;line-height:1.7;max-width:920px}
-.sub b{color:var(--txt)}
-.bar{max-width:1280px;margin:0 auto 14px;display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 16px}
-button{background:#1b2a55;border:1px solid #2f447e;color:var(--txt);border-radius:10px;padding:7px 14px;font-size:14px;cursor:pointer;transition:.15s;font-family:inherit}
-button:hover{background:#24366b;border-color:#4a68b8}
-button.primary{background:#2a5db0;border-color:#4a86e8}
-label{color:var(--dim);font-size:13px;display:flex;align-items:center;gap:8px;white-space:nowrap}
-input[type=range]{width:140px;accent-color:var(--acc)}
-main{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,1fr);gap:16px}
-@media(max-width:900px){main{grid-template-columns:1fr}}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;position:relative}
-.card h2{font-size:15px;color:var(--acc);font-weight:600;margin-bottom:8px;letter-spacing:.5px}
-#geo{width:100%;height:680px;display:block;border-radius:10px;cursor:crosshair;touch-action:none;background:#0a1128}
-@media(max-width:900px){#geo{height:78vw;min-height:380px}}
-.facts{margin-top:12px;font-size:13px;color:var(--dim);line-height:1.85;border-top:1px dashed var(--line);padding-top:10px}
-.facts b{color:var(--txt)}
-.viewbox{display:flex;flex-direction:column;align-items:center;gap:6px}
-#view{width:220px;height:220px;border-radius:12px;background:#050912}
-#phaseName{font-size:26px;font-weight:700;color:var(--gold);letter-spacing:2px}
-#phaseSub{font-size:13px;color:var(--dim);margin-top:-4px}
-table.info{width:100%;border-collapse:collapse;margin-top:10px;font-size:14px}
-table.info td{padding:7px 4px;border-bottom:1px dashed var(--line)}
-table.info td:first-child{color:var(--dim)}
-table.info td:last-child{text-align:right;font-variant-numeric:tabular-nums;color:var(--txt)}
-.jump{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
-.jump button{font-size:13px;padding:6px 4px}
-.stripwrap{max-width:1280px;margin:16px auto 0}
-#strip{width:100%;height:132px;display:block;border-radius:10px;cursor:pointer}
-.foot{max-width:1280px;margin:14px auto 0;color:#5f7099;font-size:12px;line-height:1.8}
+:root{color-scheme:dark;--bg:#0b1224;--panel:#131e35;--line:#30415c;--text:#eef3ff;--muted:#a9bad3;--gold:#ffda80;--blue:#85d9ff;--green:#9ee3b8}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at 70% 0,#223151 0,transparent 55%),var(--bg);color:var(--text);font-family:"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;font-size:16px;line-height:1.6}
+button,input{font:inherit}
+button{min-height:44px;border:1px solid var(--line);border-radius:12px;background:#1c2b45;color:var(--text);padding:9px 16px;cursor:pointer}
+button:hover{background:#2b405e}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--blue);outline-offset:4px}
+button.primary{background:var(--gold);color:#32240e;border-color:var(--gold);font-weight:700}
+button[aria-pressed=true]{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold);background:#3a3440}
+button:disabled{opacity:.5;cursor:default}
+.page{max-width:1180px;margin:auto;padding:28px 24px 40px}
+header{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:22px}
+.eyebrow{font-size:12px;letter-spacing:2px;color:var(--gold);font-weight:700}
+h1{font-size:clamp(26px,4vw,40px);line-height:1.25;margin:6px 0 10px}
+.intro{margin:0;color:var(--muted)}
+.intro strong{color:var(--gold);font-weight:600}
+.badge{flex-shrink:0;border:1px solid var(--line);padding:7px 14px;border-radius:30px;font-size:13px;color:var(--muted)}
+.stations{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.station{text-align:left;display:flex;align-items:center;gap:12px;padding:12px 16px}
+.station .icon{font-size:28px;line-height:1}
+.station small{display:block;color:var(--muted);font-size:12px}
+.scene-grid{display:grid;grid-template-columns:minmax(0,1.8fr) minmax(260px,1fr);gap:16px;align-items:stretch}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:20px;overflow:hidden}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px 0}
+h2{font-size:16px;margin:0;font-weight:600}
+.number{display:inline-grid;place-items:center;width:25px;height:25px;border-radius:50%;background:#293c58;color:var(--blue);font-size:13px;margin-right:8px}
+.hint{font-size:12px;color:var(--muted)}
+#geo{display:block;width:100%;height:390px;touch-action:none;cursor:grab}
+#geo.dragging{cursor:grabbing}
+.diagram-note{color:var(--muted);font-size:12px;padding:0 20px 12px}
+.toggles{display:flex;flex-wrap:wrap;gap:10px 20px;padding:12px 20px;border-top:1px solid var(--line);font-size:14px}
+.toggles label{display:flex;gap:8px;align-items:center;cursor:pointer}
+input{accent-color:var(--gold)}
+.sky{display:flex;flex-direction:column;align-items:center;text-align:center;background:radial-gradient(ellipse at 50% 40%,#1d2b45,#101a2e 75%)}
+.sky .card-head{align-self:stretch;text-align:left}
+#view{width:200px;height:200px;display:block;margin:10px auto 0}
+.phase-name{font-size:28px;line-height:1.3;font-weight:700;color:var(--gold)}
+.phase-description{color:var(--muted);font-size:15px;margin:8px 18px 12px;min-height:48px}
+.link-label{color:var(--blue);font-size:13px;margin:auto 12px 18px}
+.explanation{margin-top:16px;display:flex;gap:18px;align-items:center;background:#1b2b42;border:1px solid #3c526d;border-radius:16px;padding:16px 20px}
+.explanation .mark{font-size:27px}
+.explanation strong{display:block;color:var(--gold);font-size:18px}
+.explanation p{margin:3px 0 0;color:var(--muted);font-size:14px}
+.controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:16px 0}
+.scrubber{display:flex;align-items:center;gap:12px;flex:1;min-width:220px;color:var(--muted);font-size:14px}
+.scrubber input{flex:1;min-width:70px;width:100%;min-height:44px}
+#age{min-width:65px;font-variant-numeric:tabular-nums;color:var(--text)}
+.timeline{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}
+.phase-stop{border:1px solid transparent;background:transparent;padding:10px 3px;text-align:center;font-size:12px}
+.phase-stop canvas{display:block;width:46px;height:46px;margin:0 auto 6px}
+.phase-stop[aria-current=true]{border-color:var(--blue);background:#1e3048}
+.timeline-caption{display:flex;justify-content:space-between;padding:0 18px;color:var(--muted);font-size:12px;margin:6px 0 20px}
+.challenge{margin-top:22px;padding:20px;display:flex;justify-content:space-between;align-items:center;gap:16px;border:1px solid #52624e;border-radius:18px;background:linear-gradient(110deg,#22372f,#19283b)}
+.challenge h2{color:#d5f4c9;font-size:18px}
+.challenge p{font-size:14px;margin:4px 0 0;color:#c1d5cd}
+.challenge-actions{display:flex;gap:8px;flex-shrink:0}
+#feedback{font-size:14px;color:var(--gold);margin-top:8px;max-width:650px}
+.misconception{font-size:14px;color:var(--muted);padding:16px 0}
+.misconception strong{color:var(--text)}
+details{border-top:1px solid var(--line);padding:16px 0;color:var(--muted);font-size:14px}
+summary{cursor:pointer;color:var(--text);width:fit-content}
+.advanced{margin-top:14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.advanced label{display:flex;align-items:center;gap:10px}
+.facts{display:flex;gap:12px 30px;flex-wrap:wrap;margin-top:14px;font-variant-numeric:tabular-nums}
+.facts b{color:var(--text)}
+.technical{font-size:12px;line-height:1.8;max-width:900px;margin-top:16px}
+@media(max-width:760px){.page{padding:20px 14px 30px}header{margin-bottom:18px}.badge{display:none}.scene-grid{grid-template-columns:1fr}#geo{height:350px}.sky{display:grid;grid-template-columns:150px 1fr;text-align:left;padding-bottom:14px}.sky .card-head{grid-column:1/-1}.sky #view{width:145px;height:145px;grid-row:2/5;margin:6px 0 0}.phase-name{font-size:25px;margin-top:16px}.phase-description{margin:6px 12px 8px 0;min-height:0}.link-label{margin:0 10px 0 0}.stations{gap:6px}.station{padding:10px 5px;flex-direction:column;gap:4px;text-align:center}.station small{font-size:11px}.station .icon{font-size:23px}.station-name{font-size:14px}.explanation{padding:14px;gap:12px}.explanation strong{font-size:16px}.controls>button{flex:1}.scrubber{flex-basis:100%}.timeline{grid-template-columns:repeat(4,1fr)}.timeline-caption{display:none}.challenge{align-items:flex-start;flex-direction:column}.challenge-actions{flex-wrap:wrap}.card-head{padding:14px 14px 0}.hint{font-size:11px}.toggles{padding:12px 14px;gap:8px 16px;font-size:13px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 </style>
 </head>
 <body>
+<div class="page">
+  <header>
+    <div>
+      <div class="eyebrow">小小天文观察员 · 月相探索</div>
+      <h1>月亮，为什么会“变脸”？</h1>
+      <p class="intro">月亮没有变形。<strong>变的是我们看到的亮面。</strong></p>
+    </div>
+    <div class="badge">拖一拖 · 看一看 · 猜一猜</div>
+  </header>
 
-<header>
-<h1>🌗 月相变化 · <span class="moon">真实比例</span>交互演示</h1>
-<p class="sub">太阳永远照亮月球的半个球面。随着月球绕地球公转（<b>朔望月 ≈ 29.53 天</b>），从地球看过去，亮半球相对我们的朝向不断变化，于是一个月内依次出现：新月 → 娥眉月 → 上弦月 → 盈凸月 → 满月 → 亏凸月 → 下弦月 → 残月。可以直接用鼠标<b>拖动左图</b>“拨动”月球。</p>
-</header>
+  <nav class="stations" aria-label="月相四站">
+    <button class="station" data-station="0" aria-pressed="false"><span class="icon" aria-hidden="true">🌑</span><span class="station-name">新月<small>第一站 · 亮面在哪？</small></span></button>
+    <button class="station" data-station="1" aria-pressed="true"><span class="icon" aria-hidden="true">🌓</span><span class="station-name">上弦月<small>第二站 · 看见一半</small></span></button>
+    <button class="station" data-station="2" aria-pressed="false"><span class="icon" aria-hidden="true">🌕</span><span class="station-name">满月<small>第三站 · 亮面朝向我</small></span></button>
+    <button class="station" data-station="3" aria-pressed="false"><span class="icon" aria-hidden="true">🌗</span><span class="station-name">下弦月<small>第四站 · 换了一边</small></span></button>
+  </nav>
 
-<div class="bar">
-  <button id="play" class="primary">⏸ 暂停</button>
-  <label>速度 <input id="speed" type="range" min="0.2" max="12" step="0.1" value="2"><span id="speedV">2.0 天/秒</span></label>
-  <label>月龄 <input id="zoom" type="range" min="0" max="29.53" step="0.01" value="5"><span id="zoomV">第 6 天</span></label>
-  <button id="mode">切换：示意模式（压缩距离）</button>
-  <button id="now">⇢ 当前真实月相</button>
-  <button id="reset">↺ 回到新月</button>
+  <main>
+    <div class="scene-grid">
+      <section class="card">
+        <div class="card-head"><h2><span class="number">1</span>飞到太空看</h2><span class="hint">拖动月球或点击轨道</span></div>
+        <canvas id="geo" role="img" aria-label="太阳在左，月球绕地球运行。黄色是太阳照亮的一半。蓝色眼睛固定在地球中心，只代表地球视角，不是人的实际位置；蓝色箭头指向月球。可用下方时间滑块或月相按钮控制。"></canvas>
+        <div class="diagram-note">不用换地方！蓝色眼睛只代表“从地球看”，不是人的实际位置。箭头转动，表示看向月球的方向变了。</div>
+        <div class="diagram-note" id="scaleNote">教学示意：为方便观察，天体大小和距离未按比例。</div>
+        <div class="toggles">
+          <label><input id="showLight" type="checkbox" checked>标出太阳照亮的一半</label>
+          <label><input id="showVisible" type="checkbox" checked>标出朝向我们的半球</label>
+        </div>
+      </section>
+      <section class="card sky">
+        <div class="card-head"><h2><span class="number">2</span>站在地球看</h2></div>
+        <canvas id="view" role="img" aria-label="地球观察者看到的月相：上弦月，右半边亮。"></canvas>
+        <div id="phaseName" class="phase-name">上弦月</div>
+        <p id="phaseDescription" class="phase-description">右半边亮，像半块圆饼。</p>
+        <div class="link-label">沿左图蓝色箭头看，就能看到这个月相</div>
+      </section>
+    </div>
+
+    <section class="explanation" aria-label="现在的月相原理">
+      <span class="mark" aria-hidden="true">💡</span>
+      <div><strong id="reason">我们看见半个亮面。</strong><p id="reasonDetail">太阳照亮的仍是半个月球；从地球看，右半边月面是亮的。</p></div>
+    </section>
+    <div class="controls">
+      <button id="play" class="primary">▶ 播放到下一站</button>
+      <button id="next">下一站 →</button>
+      <label class="scrubber" for="ageSlider">慢慢拨动时间<input id="ageSlider" type="range" min="0" max="29.530588853" step="0.01" value="7.38264721325"><output id="age" for="ageSlider">7.4 天</output></label>
+    </div>
+    <div class="timeline" id="timeline" role="group" aria-label="一个月的八种月相"></div>
+    <div class="timeline-caption"><span>新月出发</span><span>亮的部分越来越多 → 满月 → 亮的部分越来越少</span><span>再回到新月 ↻</span></div>
+
+    <section class="challenge" aria-labelledby="challengeTitle">
+      <div>
+        <h2 id="challengeTitle">轮到你了：找到圆圆的满月</h2>
+        <p>猜一猜，月球走到地球的哪一侧，我们才能看见完整的亮面？</p>
+        <div id="feedback" role="status" aria-live="polite"></div>
+      </div>
+      <div class="challenge-actions">
+        <button id="challenge">开始挑战</button>
+        <button id="check" hidden>检查位置</button>
+        <button id="endChallenge" hidden>退出挑战</button>
+      </div>
+    </section>
+    <p class="misconception">记住：<strong>月相变化不是地球的影子在遮月亮。</strong>地球挡住阳光、让月球进入地球影子，是另一种现象——月食。月球轨道略有倾斜，所以不是每次满月都会发生月食。</p>
+
+    <details>
+      <summary>继续探索：真实比例、今天的月亮和科学小知识</summary>
+      <div class="advanced">
+        <button id="mode" aria-pressed="false">查看真实比例</button>
+        <button id="now">看看今天的月亮（估算）</button>
+        <button id="reset">回到新月</button>
+        <label for="speed">播放速度<input id="speed" type="range" min="0.5" max="4" step="0.1" value="1.5"><output id="speedValue" for="speed">1.5 天/秒</output></label>
+      </div>
+      <div class="facts"><span>月龄：<b id="detailAge"></b></span><span>可见月面亮部占比：<b id="illumination"></b></span><span>日—地—月角距：<b id="elongation"></b></span></div>
+      <p>月球总有约一半被太阳照亮。但从地球看，亮部可以从几乎看不见，变成整个圆面。上弦月和下弦月都能看见半圆，亮的一侧不同。</p>
+      <p>地球大约一天自转一圈，影响月亮什么时候出现在你那里的天空；一个月里的月相变化，主要来自月球绕地球的位置变化。同一时刻，地球各地看到的月相基本相同，但月亮是否在地平线上方、亮面朝哪个方向，可能不同。这里用地球中心的眼睛统一表示“从地球看”，不模拟具体地点和昼夜。</p>
+      <p class="technical">本页采用北半球常见的月相示意方向（上弦右亮、下弦左亮），不模拟当地地平线和月面旋转。太阳光按平行光处理；轨道采用平均朔望月 29.5306 天的圆轨道相位模型，忽略轨道倾角和椭圆轨道；不用于模拟日食、月食。真实比例模式的地月半径比为 1 : 0.2726，中心距离为地球半径的 60.34 倍，太阳在画外。教学模式只用于看清关系。月龄不是农历日期，满月也不一定恰好发生在农历十五。“今天的月亮”以 2000-01-06 18:14 UTC 新月为基准估算，可能与实际相差半天左右。</p>
+    </details>
+  </main>
 </div>
-
-<main>
-  <section class="card">
-    <h2>日 — 地 — 月 几何关系（俯视，阳光从左向右照射）</h2>
-    <canvas id="geo"></canvas>
-    <div class="facts">
-      <b>关于比例：</b>默认按<b>真实比例</b>绘制——月球直径约为地球的 27.3%，地月距离约为地球直径的 30.2 倍，所以轨道圈里地球只有几个像素大（月球被照亮的细节，请看右下角放大视图）。太阳直径是地球的 109 倍、距离是地月距离的约 390 倍，画不进画面，只能用<b>平行光箭头</b>表示。<br>
-      <b>怎么读图：</b>月球的亮面<b>永远朝向太阳</b>（图中始终朝左）；虚线是月球公转轨道；地球旁边的小扇形是“日—地—月”角距，正是它决定了月相的形状与照亮比例。<b>右下角放大视图</b>：被太阳照亮、但背对我们的那一半被压暗了，保持亮黄色的就是“既照亮又朝向地球”的部分——你在地球上看到的亮部；蓝虚线是朝向地球半球的分界线；小圆盘是从地球方向看过去的样子，和右侧大图完全一致，<b>点小圆盘可把整张几何图放大</b>（滚轮调节倍率，Esc 或右上角 × 关闭，放大时仍可拖动月球）。
-    </div>
-  </section>
-
-  <aside class="card">
-    <h2>从地球看到的月亮（北半球视角）</h2>
-    <div class="viewbox">
-      <canvas id="view"></canvas>
-      <div id="phaseName">新月</div>
-      <div id="phaseSub">New Moon</div>
-    </div>
-    <table class="info">
-      <tr><td>月龄（距新月天数）</td><td id="iAge">0.0 天</td></tr>
-      <tr><td>月面照亮比例</td><td id="iIll">0.0%</td></tr>
-      <tr><td>日—地—月角距</td><td id="iElong">0°</td></tr>
-      <tr><td>下一次满月</td><td id="iFull">14.8 天后</td></tr>
-    </table>
-    <div class="jump">
-      <button data-t="0">新月</button>
-      <button data-t="7.38264721325">上弦月</button>
-      <button data-t="14.7652944265">满月</button>
-      <button data-t="22.1479416398">下弦月</button>
-    </div>
-  </aside>
-</main>
-
-<div class="stripwrap card">
-  <h2>一个朔望月（约 29.5 天）月相总览 —— 点击任意一天跳转（小字为对应农历日期）</h2>
-  <canvas id="strip"></canvas>
-</div>
-
-<p class="foot">说明：周期取平均朔望月 29.5306 天；月球被照亮的一半永远朝向太阳，地球上看到的只是亮面在不同角度下的投影。演示忽略了黄道与白道约 5° 的倾角及椭圆轨道的影响。“当前真实月相”按 2000-01-06 新月时刻起算的简化公式估算，可能与实际相差半天左右。</p>
-
 <script>
 "use strict";
-const SYNODIC = 29.530588853, TAU = Math.PI * 2, D2R = Math.PI / 180;
 const $ = id => document.getElementById(id);
-const geo = $('geo'), view = $('view'), strip = $('strip');
-const gtx = geo.getContext('2d'), vtx = view.getContext('2d'), stx = strip.getContext('2d');
-const dpr = Math.min(2, window.devicePixelRatio || 1);
-
-let t = 5.0, playing = true, speed = 2, mode = 'real';
-let forceView = true, lastV = -1, lastStripDay = -1, dragging = false;
-let geoStars = [];
-
-/* ---------- 工具 ---------- */
-function fit(c, w, h) {
-  const W = Math.max(1, Math.round(w * dpr)), H = Math.max(1, Math.round(h * dpr));
-  if (c.width !== W || c.height !== H) { c.width = W; c.height = H; return true; }
-  return false;
-}
-function makeStars(n) {
-  return Array.from({ length: n }, () => ({ x: Math.random(), y: Math.random(), r: Math.random() * 1.2 + 0.4, a: Math.random() * 0.55 + 0.25 }));
-}
-function rr(ctx, x, y, w, h, r) { ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(x, y, w, h, r); else ctx.rect(x, y, w, h); }
-function cnDay(n) {
-  const d = '一二三四五六七八九';
-  if (n === 10) return '初十'; if (n === 20) return '二十'; if (n === 30) return '三十';
-  if (n < 10) return '初' + d[n - 1];
-  if (n < 20) return '十' + d[n - 11];
-  return '廿' + d[n - 21];
-}
-const PHASES = [
-  [0, '新月', 'New Moon'], [45, '娥眉月', 'Waxing Crescent'], [90, '上弦月', 'First Quarter'],
-  [135, '盈凸月', 'Waxing Gibbous'], [180, '满月', 'Full Moon'], [225, '亏凸月', 'Waning Gibbous'],
-  [270, '下弦月', 'Last Quarter'], [315, '残月', 'Waning Crescent']
+const TAU = Math.PI * 2, MONTH = 29.530588853, QUARTER = MONTH / 4;
+const phases = [
+  {name:'新月', shape:'亮面背对我们，月亮几乎看不见。', reason:'亮的一面背对我们。', detail:'月球在太阳这一侧。太阳照亮它的另一半，我们面对的这一半是暗的。'},
+  {name:'蛾眉月', shape:'右边亮起细细的一弯。', reason:'亮面一点点转向我们。', detail:'太阳照亮的仍是半个月球；从地球看，只看见一小弯亮部。'},
+  {name:'上弦月', shape:'右半边亮，像半块圆饼。', reason:'我们看见半个亮面。', detail:'太阳照亮的仍是半个月球；从地球看，右半边月面是亮的。'},
+  {name:'盈凸月', shape:'亮的部分越来越多，快要变圆了。', reason:'越来越多的亮面朝向我们。', detail:'月球没有变大，只是它被太阳照亮的一面，更多地朝向了地球。'},
+  {name:'满月', shape:'整个圆面都亮了，像一块圆饼。', reason:'亮的一面朝向我们！', detail:'月球来到地球背向太阳的一侧，我们能看见几乎整个被太阳照亮的半球。'},
+  {name:'亏凸月', shape:'圆月开始变缺，左边仍然亮着。', reason:'亮面开始转离我们。', detail:'月球继续绕地球走，我们看到的亮部开始减少；太阳仍照亮半个月球。'},
+  {name:'下弦月', shape:'又是半圆，这次左半边亮。', reason:'又看见半个亮面，这次换了一边。', detail:'和上弦月一样，我们看见半圆的亮部；但这次月球在地球的另一侧。'},
+  {name:'残月', shape:'只剩左边细细的一弯。', reason:'亮面大部分转到背面了。', detail:'我们只能看见一小弯亮部。月球继续走，就会回到新月的位置。'}
 ];
-function phaseInfo(phi) {
-  const deg = phi / D2R;
-  let best = PHASES[0], bd = 1e9;
-  for (const p of PHASES) { const d = Math.abs(deg - p[0]); if (d < bd) { bd = d; best = p; } }
-  return best;
+let age = QUARTER, realScale = false, playing = false, target = 0, speed = 1.5;
+let dirty = true, dragging = false, challenge = false;
+const geo = $('geo'), view = $('view');
+const ctx = geo.getContext('2d'), vtx = view.getContext('2d');
+const moonImage = document.createElement('canvas');
+moonImage.width = moonImage.height = 200;
+const dpr = Math.min(window.devicePixelRatio || 1, 2);
+const wrap = n => ((n % MONTH) + MONTH) % MONTH;
+function phaseIndex() {
+  const station = Math.round(age / QUARTER);
+  if (Math.abs(age - station * QUARTER) < .05) return station * 2 % 8;
+  return (Math.floor(age / QUARTER) * 2 + 1) % 8;
 }
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-/* ---------- 月面渲染（物理正确：亮面朝向太阳） ---------- */
-function renderMoonInto(cv, R, e, waxing) {
-  const size = cv.width, ctx = cv.getContext('2d');
-  const img = ctx.createImageData(size, size), data = img.data;
-  const c = size / 2;
-  const sx = Math.sin(e) * (waxing ? 1 : -1), sz = Math.cos(e); // 视线坐标下的太阳方向
-  let p = 0;
-  for (let y = 0; y < size; y++) {
-    const ny = (y + 0.5 - c) / R;
-    for (let x = 0; x < size; x++) {
-      const nx = (x + 0.5 - c) / R;
-      const r2 = nx * nx + ny * ny;
-      if (r2 > 1) { p += 4; continue; }
-      const nz = -Math.sqrt(1 - r2);            // 朝向观察者的半球
-      const d = nx * sx + nz * sz;              // 与太阳方向点积
-      const limb = 0.35 + 0.65 * Math.sqrt(-nz);
-      const sm = d <= -0.05 ? 0 : d >= 0.05 ? 1 : (d + 0.05) / 0.1;
-      const val = sm * (d > 0 ? (0.16 + 0.84 * d) : 0.07) * limb;
-      data[p++] = Math.min(255, val * 255);
-      data[p++] = Math.min(255, val * 242);
-      data[p++] = Math.min(255, val * 210);
-      data[p++] = 255;
-    }
-  }
-  ctx.putImageData(img, 0, 0);
+function circle(context, x, y, radius, fill) {
+  context.beginPath(); context.arc(x, y, radius, 0, TAU);
+  context.fillStyle = fill; context.fill();
 }
-
-/* 主视图与相关资源初始化 */
-view.width = view.height = Math.round(220 * dpr);
-const VS = view.width, VR = VS * 0.40;
-const moonTmp = document.createElement('canvas');
-moonTmp.width = moonTmp.height = Math.ceil(VR * 2);
-const miniTmp = document.createElement('canvas');
-miniTmp.width = miniTmp.height = 96;
-let bigPreview = false;                              // 全景放大模式：整张几何图缩放查看
-let zoomK = 2.2;                                     // 放大倍率（进入后可滚轮调节 1.5–5×）
-let ZV = 1, FX = 0, FY = 0, zcX = 0, zcY = 0;        // 当前帧缩放/焦点；× 按钮位置（屏幕坐标）
-const texCanvas = document.createElement('canvas');
-texCanvas.width = texCanvas.height = moonTmp.width;
-(function buildTexture() {
-  const ctx = texCanvas.getContext('2d'), S = texCanvas.width, c = S / 2, R = S / 2;
-  ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, S, S);   // 白色=乘色不变（月海暗斑以外不改动天空）
-  for (let i = 0; i < 16; i++) {
-    const a = Math.random() * TAU, rad = Math.random() * R * 0.75;
-    const bx = c + Math.cos(a) * rad, by = c + Math.sin(a) * rad;
-    const br = R * (0.18 + Math.random() * 0.4);
-    const g = ctx.createRadialGradient(bx, by, 0, bx, by, br);
-    g.addColorStop(0, 'rgba(58,60,72,0.5)');
-    g.addColorStop(1, 'rgba(58,60,72,0)');
-    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(bx, by, br, 0, TAU); ctx.fill();
-  }
-})();
-const viewStars = makeStars(90);
-
-/* 底部 30 天小月相（月海纹理略去，保持轻快） */
-const minis = [];
-for (let i = 0; i < 30; i++) {
-  const cv = document.createElement('canvas'); cv.width = cv.height = 96;
-  const phi = (i / 30) * TAU;
-  renderMoonInto(cv, 44, phi <= Math.PI ? phi : TAU - phi, phi <= Math.PI);
-  minis.push(cv);
+function line(context, x1, y1, x2, y2, color, width = 1.5) {
+  context.strokeStyle = color; context.lineWidth = width;
+  context.beginPath(); context.moveTo(x1, y1); context.lineTo(x2, y2); context.stroke();
 }
-
-/* ---------- 主几何图 ---------- */
-function geoLayout(w, h) {
-  const cx = w * 0.44, cy = h / 2;
-  let earthR, orbitR;
-  if (mode === 'real') {
-    const oe = 9 * 60.34;                                  // 地月距离 = 60.34 倍地球半径
-    const fitK = Math.min(1, (Math.min(w, h) / 2 - 46) / oe);
-    earthR = 9 * fitK; orbitR = oe * fitK;                 // 真实比例
-  } else {
-    orbitR = Math.min(w, h) / 2 - 64;                      // 距离压缩 12.5 倍（大小仍真实）
-    earthR = Math.max(13, orbitR / 12.5);                  // 距离压缩 12.5 倍（大小仍真实）
-  }
-  const moonR = Math.max(earthR * 0.2726, 1.6);
-  const phi = (t / SYNODIC) * TAU;
-  const ang = Math.PI + phi;                               // φ=0 月球在地球左侧（日方向），随后向下运行（北半球视角）
-  const mx = cx + orbitR * Math.cos(ang), my = cy - orbitR * Math.sin(ang);
-  return { cx, cy, earthR, orbitR, moonR, phi, ang, mx, my };
+function arrow(context, x1, y1, x2, y2, color) {
+  line(context, x1, y1, x2, y2, color, 2);
+  const a = Math.atan2(y2 - y1, x2 - x1);
+  line(context, x2, y2, x2 - 7 * Math.cos(a - .45), y2 - 7 * Math.sin(a - .45), color, 2);
+  line(context, x2, y2, x2 - 7 * Math.cos(a + .45), y2 - 7 * Math.sin(a + .45), color, 2);
 }
-
-/* 场景本体：背景、阳光、轨道、地球、月球、角距扇形（不含右下面板） */
-function drawGeoScene(w, h, L) {
-  const bg = gtx.createLinearGradient(0, 0, 0, h);
-  bg.addColorStop(0, '#0a1128'); bg.addColorStop(1, '#0b0f22');
-  gtx.fillStyle = bg; gtx.fillRect(0, 0, w, h);
-  gtx.fillStyle = '#cfe0ff';
-  for (const s of geoStars) { gtx.globalAlpha = s.a; gtx.fillRect(s.x * w, s.y * h, s.r, s.r); }
-  gtx.globalAlpha = 1;
-  const { cx, cy, earthR, orbitR, moonR, phi, ang, mx, my } = L;
-
-  /* 平行阳光：自左向右流动的光束 */
-  gtx.strokeStyle = 'rgba(255,215,106,.30)'; gtx.lineWidth = 1.3;
-  gtx.setLineDash([12, 16]); gtx.lineDashOffset = -(performance.now() / 35) % 28;
-  for (let y = 32; y < h; y += 46) {
-    gtx.beginPath(); gtx.moveTo(0, y); gtx.lineTo(w, y); gtx.stroke();
-  }
-  gtx.setLineDash([]); gtx.lineDashOffset = 0;
-  /* 左缘静态箭头，标注入射方向 */
-  gtx.strokeStyle = 'rgba(255,215,106,.65)'; gtx.lineWidth = 1.6;
-  gtx.beginPath(); gtx.moveTo(8, 52); gtx.lineTo(30, 52); gtx.stroke();
-  gtx.beginPath(); gtx.moveTo(30, 52); gtx.lineTo(23, 48.5); gtx.moveTo(30, 52); gtx.lineTo(23, 55.5); gtx.stroke();
-
-  /* 太阳 */
-  if (mode === 'diagram') {
-    const sx = Math.max(72, cx - orbitR - 115), sy = cy, sr = earthR * 2.3;
-    gtx.strokeStyle = 'rgba(255,215,106,.8)'; gtx.lineWidth = 2;
-    for (let i = 0; i < 12; i++) {
-      const a = i / 12 * TAU;
-      gtx.beginPath();
-      gtx.moveTo(sx + Math.cos(a) * (sr + 4), sy + Math.sin(a) * (sr + 4));
-      gtx.lineTo(sx + Math.cos(a) * (sr + 15), sy + Math.sin(a) * (sr + 15));
-      gtx.stroke();
-    }
-    const sg = gtx.createRadialGradient(sx, sy, sr * 0.2, sx, sy, sr);
-    sg.addColorStop(0, '#fff3c4'); sg.addColorStop(1, '#ffc93c');
-    gtx.fillStyle = sg; gtx.beginPath(); gtx.arc(sx, sy, sr, 0, TAU); gtx.fill();
-    gtx.fillStyle = 'rgba(255,215,106,.85)'; gtx.font = '11px sans-serif'; gtx.textAlign = 'center';
-    gtx.fillText('太阳（大小未按比例）', sx, sy + sr + 26);
-    gtx.fillStyle = 'rgba(143,163,207,.9)'; gtx.textAlign = 'left';
-    gtx.fillText('示意模式：地月距离已压缩，天体大小仍按真实比例', 12, 20);
-  } else {
-    gtx.fillStyle = 'rgba(255,215,106,.9)'; gtx.font = '12px sans-serif'; gtx.textAlign = 'left';
-    gtx.fillText('☀ 阳光 = 平行光（太阳在画面之外：直径为地球 × 109，距离为地月距离 × 390）', 12, 20);
-  }
-
-  /* 公转轨道 */
-  gtx.setLineDash([4, 6]); gtx.strokeStyle = 'rgba(124,199,255,.35)'; gtx.lineWidth = 1;
-  gtx.beginPath(); gtx.arc(cx, cy, orbitR, 0, TAU); gtx.stroke(); gtx.setLineDash([]);
-
-  /* 轨道上的 8 个相位标注（会被右下面板遮住的，改排到面板左缘外侧） */
-  const panPs = Math.min(1, Math.max(0.62, (w - 320) / 720));
-  const panX0 = w - 280 * panPs - 10, panY0 = h - 210 * panPs - 8;
-  const curIdx = PHASES.indexOf(phaseInfo(phi));
-  gtx.font = '12px sans-serif';
-  for (let i = 0; i < 8; i++) {
-    const a = Math.PI + i * 45 * D2R;
-    let lx = cx + Math.cos(a) * (orbitR + 26), ly = cy - Math.sin(a) * (orbitR + 26);
-    if (lx < 24 || lx > w - 24 || ly < 30 || ly > h - 12) continue;
-    let align = 'center';
-    if (!bigPreview && lx + 22 > panX0 && ly + 6 > panY0) { lx = panX0 - 8; align = 'right'; }
-    gtx.textAlign = align;
-    gtx.fillStyle = i === curIdx ? '#ffd76a' : 'rgba(207,224,255,.8)';
-    gtx.fillText(PHASES[i][1], lx, ly + 4);
-  }
-
-  /* 视线（地球 → 月球并延长） */
-  gtx.setLineDash([3, 5]); gtx.strokeStyle = 'rgba(255,255,255,.28)'; gtx.lineWidth = 1;
-  gtx.beginPath(); gtx.moveTo(cx, cy);
-  gtx.lineTo(mx + Math.cos(ang) * 30, my - Math.sin(ang) * 30); gtx.stroke(); gtx.setLineDash([]);
-
-  /* 地球 */
-  const eg = gtx.createRadialGradient(cx, cy, earthR, cx, cy, earthR * 2.6);
-  eg.addColorStop(0, 'rgba(90,160,255,.22)'); eg.addColorStop(1, 'rgba(90,160,255,0)');
-  gtx.fillStyle = eg; gtx.beginPath(); gtx.arc(cx, cy, earthR * 2.6, 0, TAU); gtx.fill();
-  gtx.save();
-  gtx.beginPath(); gtx.arc(cx, cy, earthR, 0, TAU); gtx.clip();
-  const eg2 = gtx.createLinearGradient(cx - earthR, 0, cx + earthR, 0);   // 左亮右暗
-  eg2.addColorStop(0, '#bfe0ff'); eg2.addColorStop(0.55, '#3d6bc4'); eg2.addColorStop(1, '#101f45');
-  gtx.fillStyle = eg2; gtx.fillRect(cx - earthR, cy - earthR, earthR * 2, earthR * 2);
-  gtx.restore();
-  gtx.strokeStyle = 'rgba(140,190,255,.55)'; gtx.lineWidth = 1;
-  gtx.beginPath(); gtx.arc(cx, cy, earthR, 0, TAU); gtx.stroke();
-  gtx.fillStyle = 'rgba(143,163,207,.9)'; gtx.font = '11px sans-serif'; gtx.textAlign = 'center';
-  gtx.fillText('地球', cx, cy + earthR + 15);
-
-  /* 月球（亮半面朝太阳=朝左） */
-  gtx.save();
-  gtx.beginPath(); gtx.arc(mx, my, moonR, 0, TAU); gtx.clip();
-  gtx.fillStyle = '#151924'; gtx.fillRect(mx - moonR, my - moonR, moonR * 2, moonR * 2);
-  const mg = gtx.createLinearGradient(mx - moonR, 0, mx, 0);
-  mg.addColorStop(0, '#fff8e0'); mg.addColorStop(1, '#8f8b76');
-  gtx.fillStyle = mg; gtx.fillRect(mx - moonR, my - moonR, moonR, moonR * 2);
-  gtx.restore();
-  gtx.strokeStyle = 'rgba(255,255,255,.2)'; gtx.lineWidth = 1;
-  gtx.beginPath(); gtx.arc(mx, my, moonR, 0, TAU); gtx.stroke();
-  /* 当前位置高亮 */
-  gtx.strokeStyle = '#ffd76a'; gtx.lineWidth = 1.6;
-  gtx.beginPath(); gtx.arc(mx, my, moonR + 5, 0, TAU); gtx.stroke();
-
-  /* 日—地—月角距扇形 */
-  const e = Math.min(phi, TAU - phi);
-  const rA = earthR * 1.9 + 12;
-  const aM = Math.atan2(Math.sin(phi), -Math.cos(phi));   // 月球的屏幕方位角
-  const aMn = ((aM % TAU) + TAU) % TAU;
-  gtx.strokeStyle = 'rgba(124,199,255,.85)'; gtx.lineWidth = 1.4;
-  gtx.beginPath();
-  gtx.arc(cx, cy, rA, Math.PI, aMn, phi <= Math.PI);
-  gtx.stroke();
-  const mid = (Math.PI + aMn) / 2;
-  gtx.fillStyle = '#9fb7e8'; gtx.font = '11px sans-serif';
-  gtx.fillText(Math.round(e / D2R) + '°', cx + Math.cos(mid) * (rA + 17), cy + Math.sin(mid) * (rA + 17) + 4);
+function text(value, x, y, color = '#a9bad3', size = 12, align = 'center') {
+  ctx.font = `${size}px "Microsoft YaHei",sans-serif`; ctx.textAlign = align;
+  ctx.fillStyle = color; ctx.fillText(value, x, y);
 }
-
-/* 右下角“月球放大视图”面板 */
-function drawGeoPanel(w, h, L) {
-  const { phi, ang, mx, my } = L;
-  const ps = Math.min(1, Math.max(0.62, (w - 320) / 720));   // 小屏自动缩小
-  const PW = 280 * ps, PH = 210 * ps;
-  const px0 = w - PW - 10, py0 = h - PH - 8;
-  const IR = 30 * ps, mcx = px0 + 72 * ps, mcy = py0 + 62 * ps;
-  const edx = -Math.cos(ang), edy = Math.sin(ang);       // 月球指向地球的方向
-  const eNow = Math.min(phi, TAU - phi);
-  /* 指向线：轨道月球 → 放大视图 */
-  gtx.setLineDash([2, 4]); gtx.strokeStyle = 'rgba(255,255,255,.35)'; gtx.lineWidth = 1;
-  gtx.beginPath(); gtx.moveTo(mx, my); gtx.lineTo(mcx + (mx < mcx ? IR : -IR), mcy); gtx.stroke(); gtx.setLineDash([]);
-  /* 面板底（圆角矩形） */
-  gtx.fillStyle = 'rgba(13,19,48,.94)';
-  rr(gtx, px0, py0, PW, PH, 12 * ps); gtx.fill();
-  gtx.strokeStyle = 'rgba(124,199,255,.4)'; gtx.lineWidth = 1.2;
-  rr(gtx, px0, py0, PW, PH, 12 * ps); gtx.stroke();
-  /* 月球：暗面 + 朝太阳的亮半面（左） */
-  gtx.save();
-  gtx.beginPath(); gtx.arc(mcx, mcy, IR, 0, TAU); gtx.clip();
-  gtx.fillStyle = '#151924'; gtx.fillRect(mcx - IR, mcy - IR, IR * 2, IR * 2);
-  const mg2 = gtx.createLinearGradient(mcx - IR, 0, mcx, 0);
-  mg2.addColorStop(0, '#fffbe8'); mg2.addColorStop(1, '#e8e1c4');
-  gtx.fillStyle = mg2; gtx.fillRect(mcx - IR, mcy - IR, IR, IR * 2);
-  /* 背向地球的半球整体压暗 → 保持亮黄的＝地球上实际看到的亮部 */
-  const baseF = Math.atan2(-edy, -edx);
-  gtx.beginPath(); gtx.moveTo(mcx, mcy);
-  gtx.arc(mcx, mcy, IR, baseF + Math.PI / 2, baseF - Math.PI / 2, true);
-  gtx.closePath();
-  gtx.fillStyle = 'rgba(6,8,18,.74)'; gtx.fill();
-  gtx.restore();
-  /* 朝向地球半球的分界线（蓝虚线，垂直于地月连线） */
-  const px = -edy, py = edx;
-  gtx.setLineDash([4, 4]); gtx.strokeStyle = 'rgba(124,199,255,.9)'; gtx.lineWidth = 1.2;
-  gtx.beginPath();
-  gtx.moveTo(mcx - px * IR, mcy - py * IR); gtx.lineTo(mcx + px * IR, mcy + py * IR);
-  gtx.stroke(); gtx.setLineDash([]);
-  /* 蓝色箭头指向地球 + 太阳光箭头 */
-  gtx.strokeStyle = '#7cc7ff'; gtx.lineWidth = 1.6;
-  gtx.beginPath(); gtx.moveTo(mcx + edx * (IR + 3), mcy + edy * (IR + 3));
-  gtx.lineTo(mcx + edx * (IR + 14), mcy + edy * (IR + 14)); gtx.stroke();
-  const tx2 = mcx + edx * (IR + 14), ty2 = mcy + edy * (IR + 14);
-  gtx.fillStyle = '#7cc7ff'; gtx.beginPath(); gtx.arc(tx2, ty2, 2.6, 0, TAU); gtx.fill();
-  gtx.strokeStyle = 'rgba(255,215,106,.9)'; gtx.lineWidth = 1.6;
-  gtx.beginPath(); gtx.moveTo(mcx - IR - 24, mcy); gtx.lineTo(mcx - IR - 4, mcy); gtx.stroke();
-  gtx.beginPath(); gtx.moveTo(mcx - IR - 4, mcy); gtx.lineTo(mcx - IR - 10, mcy - 3.5);
-  gtx.moveTo(mcx - IR - 4, mcy); gtx.lineTo(mcx - IR - 10, mcy + 3.5); gtx.stroke();
-  gtx.font = '10px sans-serif'; gtx.textAlign = 'center';
-  gtx.fillStyle = 'rgba(255,215,106,.95)'; gtx.fillText('太阳', mcx - IR - 22, mcy - 9);
-  gtx.fillStyle = '#7cc7ff'; gtx.fillText('地球', tx2 + edx * 15, ty2 + edy * 15 + 3);
-  gtx.strokeStyle = 'rgba(255,255,255,.25)'; gtx.lineWidth = 1;
-  gtx.beginPath(); gtx.arc(mcx, mcy, IR, 0, TAU); gtx.stroke();
-  /* 小月相圆盘：从地球方向看过去的样子（与右侧大图一致） */
-  renderMoonInto(miniTmp, 44, eNow, phi <= Math.PI);
-  const sr2 = 20 * ps, sx2 = px0 + 132 * ps, sy2 = py0 + 158 * ps;
-  gtx.save();
-  gtx.beginPath(); gtx.arc(sx2, sy2, sr2, 0, TAU); gtx.clip();
-  gtx.drawImage(miniTmp, sx2 - sr2, sy2 - sr2, sr2 * 2, sr2 * 2);
-  gtx.restore();
-  gtx.strokeStyle = 'rgba(255,255,255,.3)'; gtx.lineWidth = 1;
-  gtx.beginPath(); gtx.arc(sx2, sy2, sr2, 0, TAU); gtx.stroke();
-  /* 放大镜角标：提示可点击放大 */
-  const bgx = sx2 + sr2 * 0.74, bgy = sy2 - sr2 * 0.74;
-  gtx.fillStyle = 'rgba(13,19,48,.95)';
-  gtx.beginPath(); gtx.arc(bgx, bgy, 7.5, 0, TAU); gtx.fill();
-  gtx.strokeStyle = '#7cc7ff'; gtx.lineWidth = 1.2;
-  gtx.beginPath(); gtx.arc(bgx, bgy, 7.5, 0, TAU); gtx.stroke();
-  gtx.beginPath(); gtx.arc(bgx - 1, bgy - 1, 3, 0, TAU); gtx.stroke();
-  gtx.beginPath(); gtx.moveTo(bgx + 1.2, bgy + 1.2); gtx.lineTo(bgx + 4, bgy + 4); gtx.stroke();
-  /* 弯曲箭头：俯视图 → 地球视角 */
-  const ax0 = mcx + IR * 0.55, ay0 = mcy + IR * 0.85;
-  const ax2 = sx2 - 8 * ps, ay2 = sy2 - sr2 - 4;
-  const ax1 = (ax0 + ax2) / 2 + 30 * ps, ay1 = (ay0 + ay2) / 2;
-  gtx.strokeStyle = 'rgba(255,255,255,.55)'; gtx.lineWidth = 1.3;
-  gtx.beginPath(); gtx.moveTo(ax0, ay0); gtx.quadraticCurveTo(ax1, ay1, ax2, ay2); gtx.stroke();
-  const ta = Math.atan2(ay2 - ay1, ax2 - ax1);
-  gtx.beginPath();
-  gtx.moveTo(ax2, ay2); gtx.lineTo(ax2 - 7 * Math.cos(ta - 0.45), ay2 - 7 * Math.sin(ta - 0.45));
-  gtx.moveTo(ax2, ay2); gtx.lineTo(ax2 - 7 * Math.cos(ta + 0.45), ay2 - 7 * Math.sin(ta + 0.45));
-  gtx.stroke();
-  /* 文字（右栏，宽松排布） */
-  gtx.textAlign = 'center';
-  const txx = px0 + 208 * ps;
-  gtx.font = '12px sans-serif'; gtx.fillStyle = 'rgba(220,230,255,.95)';
-  gtx.fillText('月球放大视图', txx, py0 + 28 * ps);
-  if (ps > 0.8) {
-    gtx.font = '11px sans-serif'; gtx.fillStyle = 'rgba(255,226,150,.95)';
-    gtx.fillText('亮黄 ＝ 照亮且', txx, py0 + 56 * ps);
-    gtx.fillText('朝向地球的亮部', txx, py0 + 72 * ps);
-    gtx.fillText('（你看到的部分）', txx, py0 + 88 * ps);
-    gtx.fillStyle = 'rgba(143,163,207,.95)';
-    gtx.fillText('蓝虚线 ＝ 朝向', txx, py0 + 118 * ps);
-    gtx.fillText('地球半球的分界', txx, py0 + 134 * ps);
-    gtx.fillStyle = 'rgba(124,199,255,.9)';
-    gtx.fillText('点小图放大全景', txx, py0 + 164 * ps);
+function fit(canvas, context) {
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  const pixelW = Math.round(w * dpr), pixelH = Math.round(h * dpr);
+  if (canvas.width !== pixelW || canvas.height !== pixelH) {
+    canvas.width = pixelW; canvas.height = pixelH;
   }
-  gtx.font = '11px sans-serif'; gtx.fillStyle = 'rgba(220,230,255,.9)';
-  gtx.fillText('从地球看', sx2, sy2 + sr2 + 14);
+  context.setTransform(dpr, 0, 0, dpr, 0, 0);
+  context.clearRect(0, 0, w, h);
+  return {w, h};
 }
-
-/* 全景放大时的屏幕 UI（屏幕坐标，不受缩放影响）：× 关闭 + 倍率提示 */
-function drawZoomUI(w, h) {
-  zcX = w - 26; zcY = 26;
-  gtx.font = '12px sans-serif'; gtx.textAlign = 'right';
-  const label = '全景放大 ' + zoomK.toFixed(1) + '×　滚轮调节　Esc 关闭';
-  const tw = gtx.measureText(label).width;
-  gtx.fillStyle = 'rgba(13,19,48,.92)';
-  rr(gtx, zcX - 34 - tw, 12, tw + 30, 26, 13); gtx.fill();
-  gtx.strokeStyle = 'rgba(124,199,255,.4)'; gtx.lineWidth = 1;
-  rr(gtx, zcX - 34 - tw, 12, tw + 30, 26, 13); gtx.stroke();
-  gtx.fillStyle = 'rgba(220,230,255,.9)';
-  gtx.fillText(label, zcX - 40, 29);
-  gtx.fillStyle = '#2a3f7e';
-  gtx.beginPath(); gtx.arc(zcX, zcY, 12, 0, TAU); gtx.fill();
-  gtx.strokeStyle = '#7cc7ff'; gtx.lineWidth = 1.4;
-  gtx.beginPath(); gtx.arc(zcX, zcY, 12, 0, TAU); gtx.stroke();
-  gtx.strokeStyle = '#dce6ff'; gtx.lineWidth = 1.8;
-  gtx.beginPath();
-  gtx.moveTo(zcX - 4, zcY - 4); gtx.lineTo(zcX + 4, zcY + 4);
-  gtx.moveTo(zcX + 4, zcY - 4); gtx.lineTo(zcX - 4, zcY + 4);
-  gtx.stroke();
-}
-
-function drawGeo() {
+function layout() {
   const w = geo.clientWidth, h = geo.clientHeight;
-  if (fit(geo, w, h)) geoStars = makeStars(Math.round(w * h / 9000));
-  gtx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  const L = geoLayout(w, h);
-  if (bigPreview) { ZV = zoomK; FX = (L.cx + L.mx) / 2; FY = (L.cy + L.my) / 2; }
-  else { ZV = 1; FX = 0; FY = 0; }
-  gtx.save();
-  if (bigPreview) { gtx.translate(FX, FY); gtx.scale(ZV, ZV); gtx.translate(-FX, -FY); }
-  drawGeoScene(w, h, L);
-  gtx.restore();
-  if (bigPreview) drawZoomUI(w, h); else drawGeoPanel(w, h, L);
+  const cx = w * .55, cy = h * .46;
+  const orbit = Math.min(w * .29, h * .28);
+  const earth = realScale ? orbit / 60.34 : Math.min(26, w * .06);
+  const moon = realScale ? earth * .2726 : Math.min(22, w * .052);
+  const phi = age / MONTH * TAU, dx = -Math.cos(phi), dy = Math.sin(phi);
+  return {w, h, cx, cy, orbit, earth, moon, dx, dy, mx:cx + orbit * dx, my:cy + orbit * dy};
 }
+function drawGeo() {
+  fit(geo, ctx);
+  const {w,h,cx,cy,orbit,earth,moon,dx,dy,mx,my} = layout();
+  const sunX = Math.max(26, w * .065), sunY = cy;
+  if (!realScale) {
+    const glow = ctx.createRadialGradient(sunX,sunY,15,sunX,sunY,65);
+    glow.addColorStop(0,'#ffda8040'); glow.addColorStop(1,'#ffda8000');
+    circle(ctx,sunX,sunY,65,glow);
+    circle(ctx,sunX,sunY,22,'#ffda80');
+    for (let i=0;i<8;i++) {
+      const a=i/8*TAU;
+      line(ctx,sunX+Math.cos(a)*28,sunY+Math.sin(a)*28,sunX+Math.cos(a)*35,sunY+Math.sin(a)*35,'#ffda80');
+    }
+    text('太阳',sunX,sunY+55,'#ffda80',14);
+  } else text('太阳在画外',12,cy-55,'#ffda80',11,'left');
+  for (const offset of [-70,0,70]) {
+    arrow(ctx,sunX+39,cy+offset,cx+orbit+22,cy+offset,'#ffda8035');
+  }
+  text('阳光照过来 →',12,28,'#ffda80',12,'left');
+  ctx.setLineDash([4,7]); ctx.strokeStyle='#53627b'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.arc(cx,cy,orbit,0,TAU); ctx.stroke(); ctx.setLineDash([]);
+  const labels = [['新月',cx-orbit-8,cy-38],['上弦月',cx,cy+orbit+43],['满月',cx+orbit+2,cy-38],['下弦月',cx,cy-orbit-30]];
+  if (!challenge) labels.forEach(label => text(...label));
 
-/* ---------- 地球视角 ---------- */
-function drawView() {
-  const g = vtx.createLinearGradient(0, 0, 0, VS);
-  g.addColorStop(0, '#070c1c'); g.addColorStop(1, '#04070f');
-  vtx.fillStyle = g; vtx.fillRect(0, 0, VS, VS);
-  vtx.fillStyle = '#cfe0ff';
-  for (const s of viewStars) { vtx.globalAlpha = s.a; vtx.beginPath(); vtx.arc(s.x * VS, s.y * VS, s.r, 0, TAU); vtx.fill(); }
-  vtx.globalAlpha = 1;
-  const phi = (t / SYNODIC) * TAU;
-  const waxing = phi <= Math.PI;
-  const e = waxing ? phi : TAU - phi;
-  renderMoonInto(moonTmp, moonTmp.width / 2, e, waxing);
-  const c = VS / 2, R = moonTmp.width / 2;
-  vtx.drawImage(moonTmp, c - R, c - R);
-  vtx.globalCompositeOperation = 'multiply';
-  vtx.drawImage(texCanvas, c - R, c - R);
-  vtx.globalCompositeOperation = 'source-over';
+  ctx.fillStyle='#85d9ff0e'; ctx.beginPath(); ctx.moveTo(cx,cy);
+  ctx.lineTo(mx-dy*(moon+7),my+dx*(moon+7));
+  ctx.lineTo(mx+dy*(moon+7),my-dx*(moon+7)); ctx.closePath(); ctx.fill();
+  ctx.setLineDash([4,5]); line(ctx,cx,cy,mx,my,'#85d9ff99'); ctx.setLineDash([]);
+
+  circle(ctx,cx,cy,earth,'#4e9bcc');
+  ctx.save(); ctx.beginPath(); ctx.arc(cx,cy,earth,0,TAU); ctx.clip();
+  circle(ctx,cx-earth*.28,cy-earth*.23,earth*.4,'#86c7a6');
+  circle(ctx,cx+earth*.35,cy+earth*.4,earth*.32,'#86c7a6');
+  ctx.fillStyle='#07142688'; ctx.fillRect(cx,cy-earth,earth,earth*2); ctx.restore();
+  text('地球',cx-earth-14,cy+4,'#a9bad3',12,'right');
+
+  circle(ctx,mx,my,moon,'#3b465b');
+  ctx.save(); ctx.beginPath(); ctx.arc(mx,my,moon,0,TAU); ctx.clip();
+  ctx.fillStyle='#ffdf8a'; ctx.fillRect(mx-moon,my-moon,moon,moon*2); ctx.restore();
+  ctx.strokeStyle='#dee5f5'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.arc(mx,my,moon,0,TAU); ctx.stroke();
+  if ($('showLight').checked) {
+    ctx.strokeStyle='#ffda80'; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.arc(mx,my,moon+5,Math.PI/2,Math.PI*1.5); ctx.stroke();
+  }
+  if ($('showVisible').checked) {
+    // The blue arc marks the Earth-facing hemisphere without changing its illumination.
+    const towardEarth = Math.atan2(-dy,-dx);
+    ctx.strokeStyle='#85d9ff'; ctx.lineWidth=3; ctx.setLineDash([3,3]);
+    ctx.beginPath(); ctx.arc(mx,my,moon+10,towardEarth-Math.PI/2,towardEarth+Math.PI/2); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  ctx.strokeStyle='#ffda803f'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.arc(mx,my,Math.max(moon+15,20),0,TAU); ctx.stroke();
+  if (!realScale) text('拖我',mx+(dx>.5 ? -moon-19 : moon+19),my+4,'#eef3ff',12,dx>.5 ? 'right' : 'left');
+
+  const arrowStart=Math.max(earth+9,14);
+  const arrowEnd=Math.min(arrowStart+24,orbit-moon-19);
+  arrow(ctx,cx+dx*arrowStart,cy+dy*arrowStart,cx+dx*arrowEnd,cy+dy*arrowEnd,'#85d9ff');
+  ctx.beginPath(); ctx.ellipse(cx,cy,10,7,0,0,TAU); ctx.fillStyle='#d9f4ff'; ctx.fill();
+  circle(ctx,cx,cy,4,'#17698c'); circle(ctx,cx,cy,2,'#0b1224');
+  text('地球视角',cx+earth+14,cy+earth+20,'#85d9ff',12,'left');
+  text('黄色实线：太阳照亮的一半',12,h-30,'#ffda80',11,'left');
+  text('蓝色虚线：朝向我们的半球',12,h-12,'#85d9ff',11,'left');
 }
-
-/* ---------- 底部月相条 ---------- */
-function drawStrip() {
-  const w = strip.clientWidth, h = 132;
-  fit(strip, w, h);
-  stx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  stx.clearRect(0, 0, w, h);
-  const n = 30, cw = w / n, cur = Math.floor(t) % n;
-  for (let i = 0; i < n; i++) {
-    const x = i * cw + cw / 2, s = Math.min(cw - 10, 56);
-    stx.drawImage(minis[i], x - s / 2, 6, s, s);
-    stx.fillStyle = '#8fa3cf'; stx.font = '10px sans-serif'; stx.textAlign = 'center';
-    stx.fillText('第' + (i + 1) + '天', x, 6 + s + 14);
-    stx.fillText(cnDay(i + 1), x, 6 + s + 27);
-    if (i === cur) {
-      stx.strokeStyle = '#7cc7ff'; stx.lineWidth = 2;
-      rr(stx, x - cw / 2 + 3, 3, cw - 6, h - 8, 8); stx.stroke();
+function renderMoon(canvas, fraction) {
+  const context=canvas.getContext('2d'), size=canvas.width, radius=size*.43;
+  const image=context.createImageData(size,size), data=image.data;
+  const phi=fraction*TAU, sx=Math.sin(phi), sz=Math.cos(phi);
+  for(let y=0;y<size;y++) {
+    for(let x=0;x<size;x++) {
+      const nx=(x+.5-size/2)/radius, ny=(y+.5-size/2)/radius;
+      const r2=nx*nx+ny*ny;
+      if(r2>1) continue;
+      const nz=Math.sqrt(1-r2), lit=nx*sx-nz*sz>0;
+      const shade=lit ? .86+.14*nz : 1;
+      const base=lit ? [255,227,163] : [37,48,68];
+      const p=(y*size+x)*4;
+      data[p]=base[0]*shade; data[p+1]=base[1]*shade; data[p+2]=base[2]*shade; data[p+3]=255;
     }
   }
+  context.putImageData(image,0,0);
 }
-
-/* ---------- 信息面板 ---------- */
-function updateInfo() {
-  const phi = (t / SYNODIC) * TAU;
-  const info = phaseInfo(phi);
-  $('phaseName').textContent = info[1];
-  $('phaseSub').textContent = info[2];
-  $('iAge').textContent = t.toFixed(1) + ' 天（第 ' + (Math.floor(t) + 1) + ' 天）';
-  $('iIll').textContent = ((1 - Math.cos(phi)) / 2 * 100).toFixed(1) + '%';
-  $('iElong').textContent = Math.round(Math.min(phi, TAU - phi) / D2R) + '°';
-  const full = 14.7652944265;
-  let dTo = (full - t) % SYNODIC; if (dTo < 0) dTo += SYNODIC;
-  $('iFull').textContent = dTo.toFixed(1) + ' 天后';
-  if (typeof scrub !== 'undefined' && !scrubbing) scrub.value = t;
-  $('zoomV').textContent = '第 ' + (Math.floor(t) + 1) + ' 天';
+function drawView() {
+  const {w,h}=fit(view,vtx);
+  renderMoon(moonImage,age/MONTH);
+  vtx.drawImage(moonImage,0,0,w,h);
 }
+function update() {
+  drawGeo(); drawView();
+  const index=phaseIndex(), phase=phases[index];
+  const hidden=challenge;
+  $('phaseName').textContent=hidden ? '猜猜是什么月相？' : phase.name;
+  $('phaseDescription').textContent=hidden ? '观察亮部，再把月球拖到你认为会出现满月的位置。' : phase.shape;
+  $('reason').textContent=hidden ? '让完整的亮面朝向地球。' : phase.reason;
+  $('reasonDetail').textContent=hidden ? '太阳一直照亮月球的一半。月球应该走到地球的哪一侧，才能让整个亮面朝向我们？' : phase.detail;
+  view.setAttribute('aria-label',hidden ? '挑战中的月亮：请观察可见亮部。' : `地球观察者看到的月相：${phase.name}。${phase.shape}`);
+  $('ageSlider').value=age;
+  $('age').textContent=age.toFixed(1)+' 天';
+  $('detailAge').textContent=age.toFixed(1)+' 天（距新月）';
+  const phi=age/MONTH*TAU;
+  $('illumination').textContent=((1-Math.cos(phi))/2*100).toFixed(1)+'%';
+  $('elongation').textContent=(Math.min(phi,TAU-phi)*180/Math.PI).toFixed(0)+'°';
+  document.querySelectorAll('[data-station]').forEach(button => {
+    const distance=Math.abs(age-Number(button.dataset.station)*QUARTER);
+    button.setAttribute('aria-pressed',String(!hidden && Math.min(distance,MONTH-distance)<.05));
+  });
+  document.querySelectorAll('[data-phase]').forEach(button => button.setAttribute('aria-current',String(!hidden && Number(button.dataset.phase)===index)));
+  dirty=false;
+}
+function pause() {
+  playing=false; $('play').textContent='▶ 播放到下一站';
+}
+function setAge(value) {
+  pause(); age=wrap(value); dirty=true;
+}
+function nextTarget() {
+  return (Math.floor(age/QUARTER+1e-10)+1)*QUARTER;
+}
+function leaveChallenge(message='') {
+  challenge=false;
+  $('challenge').textContent='再挑战一次';
+  $('check').hidden=true; $('endChallenge').hidden=true;
+  document.querySelectorAll('[data-station],[data-phase],#play,#next,#now,#reset').forEach(button => button.disabled=false);
+  $('feedback').textContent=message;
+  dirty=true;
+}
+function checkChallenge() {
+  if (!challenge) return;
+  if (Math.abs(age-MONTH/2)<.65) {
+    setAge(MONTH/2);
+    leaveChallenge('找对方向了！帮你停在最圆的位置：月球在地球背向太阳的一侧，亮面正朝向我们。你看见了满月！');
+  } else {
+    $('feedback').textContent='还差一点！不用换观察地点，沿轨道移动月球，让它被照亮的一面正对着地球。';
+  }
+}
+for(let i=0;i<8;i++) {
+  const button=document.createElement('button');
+  button.className='phase-stop'; button.dataset.phase=i;
+  button.setAttribute('aria-label',`查看${phases[i].name}`);
+  const canvas=document.createElement('canvas'); canvas.width=canvas.height=92;
+  canvas.setAttribute('aria-hidden','true'); renderMoon(canvas,i/8);
+  const label=document.createElement('span'); label.textContent=phases[i].name;
+  button.append(canvas,label); button.onclick=()=>setAge(i*MONTH/8);
+  $('timeline').append(button);
+}
+document.querySelectorAll('[data-station]').forEach(button => button.onclick=()=>setAge(Number(button.dataset.station)*QUARTER));
+$('next').onclick=()=>setAge(nextTarget());
+$('play').onclick=()=>{
+  if (playing) { pause(); return; }
+  target=nextTarget();
+  if (reducedMotion.matches) { setAge(target); return; }
+  playing=true; $('play').textContent='Ⅱ 暂停，仔细看看';
+};
+$('ageSlider').oninput=event=>setAge(Number(event.target.value));
+$('ageSlider').onchange=checkChallenge;
+$('speed').oninput=event=>{
+  speed=Number(event.target.value); $('speedValue').textContent=speed.toFixed(1)+' 天/秒';
+};
+['showLight','showVisible'].forEach(id=>$(id).onchange=()=>dirty=true);
+$('mode').onclick=()=>{
+  realScale=!realScale;
+  $('mode').textContent=realScale ? '回到教学示意' : '查看真实比例';
+  $('mode').setAttribute('aria-pressed',String(realScale));
+  $('scaleNote').textContent=realScale ? '真实比例：月球真的这么小、这么远！蓝色眼睛和辅助标记已放大，太阳在画外。' : '教学示意：为方便观察，天体大小和距离未按比例。';
+  dirty=true;
+};
+$('reset').onclick=()=>setAge(0);
+$('now').onclick=()=>setAge((Date.now()-Date.UTC(2000,0,6,18,14))/86400000);
+$('challenge').onclick=()=>{
+  challenge=true; setAge(0);
+  $('challenge').textContent='重新开始';
+  $('check').hidden=false; $('endChallenge').hidden=false;
+  document.querySelectorAll('[data-station],[data-phase],#play,#next,#now,#reset').forEach(button=>button.disabled=true);
+  $('feedback').textContent='挑战开始！拖动左图月球，或用时间滑块。松手后看看是否找到了满月。';
+};
+$('check').onclick=checkChallenge;
+$('endChallenge').onclick=()=>leaveChallenge('已退出挑战，可以继续自由探索。');
 
-/* ---------- 动画主循环 ---------- */
-let last = performance.now();
+function moveMoon(event) {
+  const rect=geo.getBoundingClientRect(), l=layout();
+  const dx=event.clientX-rect.left-l.cx, dy=event.clientY-rect.top-l.cy;
+  if (Math.hypot(dx,dy)<l.earth+12) return;
+  setAge((Math.PI-Math.atan2(dy,dx))/TAU*MONTH);
+}
+geo.addEventListener('pointerdown',event=>{
+  if (event.button!==0) return;
+  const rect=geo.getBoundingClientRect(), l=layout();
+  const distance=Math.hypot(event.clientX-rect.left-l.cx,event.clientY-rect.top-l.cy);
+  // Ignore taps away from the orbit so a tap on Earth does not move the Moon.
+  if (Math.abs(distance-l.orbit)>Math.max(l.moon+22,30)) return;
+  event.preventDefault(); dragging=true; geo.classList.add('dragging');
+  geo.setPointerCapture(event.pointerId); moveMoon(event);
+});
+geo.addEventListener('pointermove',event=>{if(dragging) moveMoon(event);});
+function endDrag(event) {
+  if (!dragging) return;
+  dragging=false; geo.classList.remove('dragging');
+  if (geo.hasPointerCapture(event.pointerId)) geo.releasePointerCapture(event.pointerId);
+  if (event.type!=='pointercancel') checkChallenge();
+}
+geo.addEventListener('pointerup',endDrag);
+geo.addEventListener('pointercancel',endDrag);
+geo.addEventListener('lostpointercapture',endDrag);
+window.addEventListener('resize',()=>dirty=true);
+document.addEventListener('visibilitychange',()=>{if(document.hidden) pause();});
+let last=performance.now();
 function frame(now) {
-  const dt = Math.min((now - last) / 1000, 0.1); last = now;
-  if (playing && !dragging && !scrubbing) t = (t + dt * speed) % SYNODIC;
-  drawGeo();
-  if (forceView || Math.abs(t - lastV) > 0.004) { drawView(); lastV = t; forceView = false; }
-  const dI = Math.floor(t) % 30;
-  if (dI !== lastStripDay) { drawStrip(); lastStripDay = dI; }
-  updateInfo();
+  const dt=(now-last)/1000; last=now;
+  if (playing) {
+    age+=dt*speed;
+    if(age>=target) {age=wrap(target); pause();}
+    dirty=true;
+  }
+  if(dirty) update();
   requestAnimationFrame(frame);
 }
-
-/* ---------- 交互 ---------- */
-function setTFromEvent(e) {
-  const r = geo.getBoundingClientRect();
-  let x = e.clientX - r.left, y = e.clientY - r.top;
-  if (bigPreview) {
-    /* 全景放大中：点 × 关闭；其余位置按缩放逆变换后照常“拨动”月球 */
-    if ((x - zcX) * (x - zcX) + (y - zcY) * (y - zcY) <= 16 * 16) { bigPreview = false; return; }
-    x = FX + (x - FX) / ZV; y = FY + (y - FY) / ZV;
-  } else {
-    const ps = Math.min(1, Math.max(0.62, (r.width - 320) / 720));
-    const px0 = r.width - 280 * ps - 10, py0 = r.height - 210 * ps - 8;
-    if (x >= px0 && y >= py0) {                        // 月球放大视图面板区域
-      const sx2 = px0 + 132 * ps, sy2 = py0 + 158 * ps, sr2 = 20 * ps;
-      const d2 = (x - sx2) * (x - sx2) + (y - sy2) * (y - sy2);
-      if (d2 <= (sr2 + 9) * (sr2 + 9)) { bigPreview = true; zoomK = 2.2; }   // 点小圆盘：全景放大
-      return;                                          // 面板其余区域不转动月球
-    }
-  }
-  const cx = r.width * 0.44, cy = r.height / 2;
-  const a = Math.atan2(y - cy, x - cx);
-  let phi = Math.PI - a;                               // 屏幕方位角 → 相位角（月球向下/顺时针运行）
-  phi = ((phi % TAU) + TAU) % TAU;
-  t = phi / TAU * SYNODIC;
-  forceView = true;
-}
-geo.addEventListener('pointerdown', e => { dragging = true; geo.setPointerCapture(e.pointerId); setTFromEvent(e); });
-geo.addEventListener('pointermove', e => { if (dragging) setTFromEvent(e); });
-geo.addEventListener('pointerup', () => dragging = false);
-/* 全景放大中：滚轮调节倍率 */
-geo.addEventListener('wheel', e => {
-  if (!bigPreview) return;
-  e.preventDefault();
-  zoomK = Math.min(5, Math.max(1.5, zoomK * Math.exp(-e.deltaY * 0.0012)));
-}, { passive: false });
-window.addEventListener('keydown', e => { if (e.key === 'Escape' && bigPreview) bigPreview = false; });
-
-$('play').onclick = () => { playing = !playing; $('play').textContent = playing ? '⏸ 暂停' : '▶ 播放'; };
-$('speed').oninput = e => { speed = +e.target.value; $('speedV').textContent = speed.toFixed(1) + ' 天/秒'; };
-/* 月龄滑块：拖动查看一个月内任意时刻 */
-const scrub = $('zoom');
-scrub.min = 0; scrub.max = SYNODIC; scrub.step = 0.01;
-let scrubbing = false;
-scrub.addEventListener('pointerdown', () => scrubbing = true);
-window.addEventListener('pointerup', () => scrubbing = false);
-scrub.oninput = e => { t = parseFloat(e.target.value); forceView = true; };
-$('mode').onclick = () => {
-  mode = mode === 'real' ? 'diagram' : 'real';
-  $('mode').textContent = mode === 'real' ? '切换：示意模式（压缩距离）' : '切换：真实比例';
-};
-$('reset').onclick = () => { t = 0; forceView = true; };
-$('now').onclick = () => {
-  const ref = Date.UTC(2000, 0, 6, 18, 14);            // 2000-01-06 新月
-  const days = (Date.now() - ref) / 86400000;
-  t = ((days % SYNODIC) + SYNODIC) % SYNODIC;
-  forceView = true;
-};
-document.querySelectorAll('.jump button').forEach(b => b.onclick = () => { t = parseFloat(b.dataset.t); forceView = true; });
-strip.addEventListener('click', e => {
-  const r = strip.getBoundingClientRect();
-  const i = Math.min(29, Math.max(0, Math.floor((e.clientX - r.left) / r.width * 30)));
-  t = i + 0.01; forceView = true;
-});
-window.addEventListener('resize', () => { drawStrip(); lastStripDay = -1; forceView = true; });
-
 requestAnimationFrame(frame);
 </script>
 </body>
